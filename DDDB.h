@@ -83,6 +83,7 @@ public:
 			FILE* f = fopen((base_path+"/"+name+std::to_string(a_id)+"_"+std::to_string(frame)+".obj").c_str(),"w");
 			export_mesh_obj(f,name,a_id,m_id,frame);
 			frame++;
+			fclose(f);
 		}
 	}
 

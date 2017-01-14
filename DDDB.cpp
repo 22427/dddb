@@ -57,6 +57,7 @@ void DreiDDB::read(FILE *f)
 	}
 
 	vertex_data.read(f);
+	fclose(f);
 }
 
 void DreiDDB::print(int level)
