@@ -11,8 +11,8 @@ public:
 
 	uint16_t u1;
 	float u2;
-	uint32_t len_u;
-	std::string u3;
+	uint32_t len_animation_file;
+	std::string animation_file;
 	float u4[3];
 	float u5[3];
 
@@ -28,8 +28,9 @@ public:
 
 		u1 = read_uint16(f);
 		u2 = read_float(f);
-		len_u = read_uint32(f);
-		u3 = read_string(f,len_u);
+		len_animation_file = read_uint32(f);
+		animation_file = read_string(f,len_animation_file);
+
 		for(int i  = 0 ; i <3;i++)
 			u4[i] = read_float(f);
 		for(int i  = 0 ; i <3;i++)
@@ -56,7 +57,7 @@ public:
 			printf("%d",m);
 		}
 		NL;
-		TABS(level); printf("%d | %f | '%s'",u1,u2,u3.c_str());
+		TABS(level); printf("%d | %f | '%s'",u1,u2,animation_file.c_str());
 		NL;
 
 		TABS(level); for(int i = 0 ; i<3;i++)

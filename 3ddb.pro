@@ -11,7 +11,8 @@ TEMPLATE = app
 
 SOURCES += \
    main.cpp \
-    DDDB.cpp
+    DDDB.cpp \
+    DDDB_operations.cpp
 
 CONFIG += c++11
 
@@ -31,5 +32,6 @@ HEADERS += \
     Object.h \
     Shadow.h \
     util.h \
-    VertexData.h
+    VertexData.h \
+    DDDB_operations.h
 

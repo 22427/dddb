@@ -1,40 +1,77 @@
 #include "DDDB.h"
+#include "DDDB_operations.h"
 
+class Settings
+{
+public:
+
+	std::string file_name;
+	std::string output_direcotry;
+	std::string operation;
+	std::string texture_subdir;
+
+	Settings()
+	{
+		file_name = "baby.3db";
+		output_direcotry = "out";
+		operation = "list";
+		texture_subdir = "textures";
+	}
+
+};
+
+Settings parse_cmd(int argc, char** argv)
+{
+	Settings s;
+	for(int i = 1 ; i<argc ; i++)
+	{
+		std::string arg = argv[i];
+		if(arg == "-if")
+		{
+			i++;
+			s.file_name = argv[i];
+		}
+		else if(arg == "-od")
+		{
+			i++;
+			s.output_direcotry= argv[i];
+		}
+		else if(arg == "-op")
+		{
+			i++;
+			s.operation= argv[i];
+		}
+		else if(arg == "-texdir")
+		{
+			i++;
+			s.texture_subdir= argv[i];
+		}
+
+
+	}
+	return s;
+}
 
 
 int main(int argc, char** argv)
 {
-	const char* file_path = "nahrung.3db";
-	const char* res_path = "res/";
+	Settings s = parse_cmd(argc,argv);
 
-	if(argc >= 2)
-		file_path = argv[1];
-	if(argc >= 3)
-		res_path = argv[2];
 
-	bool list = false;
-
-	for(int i = 1 ; i < argc ;i++)
-	{
-		if(std::string(argv[i]) == "-l")
-			list = true;
-	}
-
-	printf("opening file %s\n",file_path);
-	FILE* f = fopen(file_path,"r");
+	FILE* f = fopen(s.file_name.c_str(),"r");
 	if(!f)
-		EXIT_ERR("Failed opening file\n");
-
+		EXIT_ERR("Failed opening file: %s",s.file_name.c_str());
 
 	DreiDDB dddb;
 	dddb.read(f);
-	if(list)
+
+	if(s.operation == "list")
 	{
 		dddb.print(0);
 	}
-	else
+	else if(s.operation == "ea")
 	{
-		dddb.export_all(res_path);
+		DDDB_OP::write_all(dddb,s.output_direcotry,0);
 	}
 	NL;
 	return 0;

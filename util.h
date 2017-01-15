@@ -8,10 +8,16 @@
 #include <vector>
 #include <map>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #ifndef EXIT_ERR
+#define EXIT_ERR(...) do{\
+	fprintf(stderr,"[ERR][F:%s:%d] ",__FILE__,__LINE__);\
+	fprintf(stderr,__VA_ARGS__);fprintf(stderr,"\n");\
+	}while(0)
 
-#define EXIT_ERR(x) do{fprintf(stderr,x);exit(-1);}while(0)
 #define NL do{printf("\n");}while(0)
 #define TAB do{printf("\t");}while(0)
 #define TABS(l) do{for(int i=0;i<l;i++)printf("\t");}while(0)
@@ -87,6 +93,14 @@ inline uint16_t read_uint16(FILE*f)
 }
 
 
+inline int16_t read_int16(FILE*f)
+{
+	int16_t i;
+	fread(&i,2,1,f);
+	return  i;
+}
+
+
 inline std::string read_string(FILE*f, u_int len)
 {
 	if(len < 127)
@@ -106,4 +120,68 @@ inline std::string read_string(FILE*f, u_int len)
 	return  res;
 
 }
+
+inline bool make_dir(const std::string& dir)
+{
+	struct stat st;
+	memset(&st,0,sizeof(struct stat));
+	if (stat(dir.c_str(), &st) == -1)
+	{
+		mkdir(dir.c_str(), 0700);
+		return true;
+	}
+	return false;
+}
+
+template<typename T>
+inline typename std::enable_if<std::is_unsigned<T>::value, T>::type
+float_to_int(const float f)
+{
+	return static_cast<T>(f*std::numeric_limits<T>::max()/*((1<<((sizeof(T)*8)))-1)*/);
+}
+
+
+template<typename T>
+inline typename std::enable_if<std::is_signed<T>::value, T>::type
+float_to_int(const float f)
+{
+	return static_cast<T>(f*((1<<((sizeof(T)*8)-1))-1));
+}
+
+
+template<typename T>
+inline typename std::enable_if<std::is_unsigned<T>::value>::type
+float_to_int(const float f, T& t)
+{
+	t = static_cast<T>(f*((1<<((sizeof(T)*8)))-1));
+}
+
+
+template<typename T>
+inline typename std::enable_if<std::is_signed<T>::value>::type
+float_to_int(const float f, T& t)
+{
+	t = static_cast<T>(f*((1<<((sizeof(T)*8)-1))-1));
+}
+
+
+
+template<typename T>
+inline typename std::enable_if<std::is_signed<T>::value, float>::type
+int_to_float(const T x)
+{
+	const T t = ((1<<((sizeof(T)*8)-1))-1);
+	return std::max(static_cast<float>(x)/t,-1.0f);
+}
+
+
+template<typename T>
+inline typename std::enable_if<std::is_unsigned<T>::value, float>::type
+int_to_float(const T x)
+{
+	const T t = std::numeric_limits<T>::max();//((1<<((sizeof(T)*8)))-1);
+	return static_cast<float>(x)/t;
+}
+
+
 
