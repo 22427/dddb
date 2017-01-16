@@ -37,9 +37,13 @@ void DDDB_OP::write_mesh_obj(const DreiDDB& dddb,const Mesh& m,FILE* f,const std
 	}
 }
 
-void DDDB_OP::write_animation(const DreiDDB &dddb, const Animation &a, const std::string directory, uint /*mesh_format*/)
+void DDDB_OP::write_animation(const DreiDDB &dddb, const Animation &a, const std::string directory, uint /*mesh_format*/, const std::string &textures)
 {
-	make_dir(directory+"/"+a.name);
+	std::string new_dir = directory+"/"+a.name;
+
+	make_dir(new_dir);
+
+
 	uint frame = 0;
 	for(const auto m_id : a.meshes)
 	{
@@ -48,15 +52,12 @@ void DDDB_OP::write_animation(const DreiDDB &dddb, const Animation &a, const std
 		frame++;
 		fclose(f);
 
-		make_dir(directory+"/../Materials/");
-		make_dir(directory+"/../Textures/");
 		for(const Link& l : dddb.meshes.at(m_id).links)
 		{
 			Material mat = dddb.materials.at(l.material);
-			f = fopen((directory+"/"+a.name+"/"+mat.name+".mtl").c_str(),"w");
-			//f = fopen((directory+"/../Materials/"+mat.name+".mtl").c_str(),"w");
-			write_material_obj(dddb,mat,f,"../");
-			fclose(f);
+
+			write_material_obj(dddb,mat,new_dir,textures);
+
 
 		}
 
@@ -64,35 +65,43 @@ void DDDB_OP::write_animation(const DreiDDB &dddb, const Animation &a, const std
 	}
 }
 
-void DDDB_OP::write_object(const DreiDDB &dddb, const Object &o, const std::string directory, uint mesh_format)
+void DDDB_OP::write_object(const DreiDDB &dddb, const Object &o, const std::string directory, uint mesh_format, const std::string &textures)
 {
 
-	make_dir(directory+"/"+o.name);
+	std::string new_dir = directory+"/"+o.name;
+
+	make_dir(new_dir);
 	for(const auto a_id : o.animations)
 	{
-		write_animation(dddb,dddb.animations.at(a_id),directory+"/"+o.name,mesh_format);
+		write_animation(dddb,dddb.animations.at(a_id),new_dir,mesh_format,textures);
 	}
 }
 
-void DDDB_OP::write_all(const DreiDDB &dddb, const std::string &directory, uint mesh_format)
+void DDDB_OP::write_all(const DreiDDB &dddb, const std::string &directory, uint mesh_format, const std::string &textures)
 {
 	make_dir(directory);
 	make_dir(directory+"/"+dddb.name);
 	for(uint i  =0 ; i<dddb.object_count;i++)
 	{
-		write_object(dddb,dddb.objects.at(i),directory+"/"+dddb.name,mesh_format);
+		write_object(dddb,dddb.objects.at(i),directory+"/"+dddb.name,mesh_format,textures);
 	}
 }
 
-void DDDB_OP::write_material_obj(const DreiDDB &, const Material &m, FILE *f, const std::string &texture_dir)
+void DDDB_OP::write_material_obj(const DreiDDB &, const Material &m, const std::string& path, const std::string &textures)
 {
 
+	FILE* f = fopen((path+"/"+m.name+".mtl").c_str(),"w");
 	fprintf(f,"newmtl %s\n",m.name.c_str());
 
-	fprintf(f,"Ka 1.000 1.000 0.000\n");
-	fprintf(f,"Kd 1.000 0.000 1.000\n");
-	fprintf(f,"Ks 0.000 0.000 1.000\n");
-	std::string ptt =texture_dir+m.path.substr(std::min(m.path.find_last_of('/'),m.path.find_last_of('\\'))+1);
+	fprintf(f,"Ka 1.000 1.000 1.000\n");
+	fprintf(f,"Kd 1.000 1.000 1.000\n");
+	fprintf(f,"Ks 1.000 1.000 1.000\n");
+
+	std::string ptt = m.path.substr(std::min(m.path.find_last_of('/'),m.path.find_last_of('\\'))+1);
 	fprintf(f,"map_Ka  %s \n",ptt.c_str());
 	fprintf(f,"map_Kd  %s \n",ptt.c_str());
+	fprintf(f,"map_Ks  %s \n",ptt.c_str());
+
+	copy_file(textures+"/"+ptt,path+"/"+ptt);
+	fclose(f);
 }

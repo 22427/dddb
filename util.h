@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <map>
+#include <fstream>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -131,6 +132,21 @@ inline bool make_dir(const std::string& dir)
 		return true;
 	}
 	return false;
+}
+
+inline bool copy_file(const std::string& from, const std::string& to)
+{
+	std::ifstream  src(from, std::ios::binary);
+	if(!src.is_open())
+		return false;
+	std::ofstream  dst(to,   std::ios::binary);
+	if(!dst.is_open())
+		return  false;
+
+	dst << src.rdbuf();
+	src.close();
+	dst.close();
+	return true;
 }
 
 template<typename T>
