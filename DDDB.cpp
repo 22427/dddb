@@ -57,6 +57,11 @@ void DreiDDB::read(FILE *f)
 	}
 
 	vertex_data.read(f);
+
+//	printf("DATArest:");
+//	uint8_t b;
+//	while(fread(&b,1,1,f)>0)
+//		print_bytes(&b,1); NL;
 	fclose(f);
 }
 

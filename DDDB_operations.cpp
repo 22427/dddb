@@ -16,7 +16,7 @@ void DDDB_OP::write_mesh_obj(const DreiDDB& dddb,const Mesh& m,FILE* f,const std
 
 		const auto& positions = dddb.vertex_data.points[l.points];
 		for(const auto& p : positions )
-			fprintf(f,"v %f %f %f \n",p.x-0.5f,p.y-0.5f,p.z-0.5f);
+			fprintf(f,"v %f %f %f \n",p.x,p.y,p.z);
 
 		const auto& tex_coords = dddb.vertex_data.texture_coords[l.tex_coords];
 		for(const auto& t : tex_coords )

@@ -97,14 +97,14 @@ public:
 		}
 
 
-		const float scale = 1.0f/(float)(0xffff);
+		const float scale = 0.5f;//1.0f/(float)(0xffff);
 		for(auto& ts : points)
 		{
 			for(auto& t : ts)
 			{
-				t[0] = scale*read_uint16(f);
-				t[1] = scale*read_uint16(f);
-				t[2] = scale*read_uint16(f);
+				t[0] = scale*(read_uint16(f)-(0xffff/2));
+				t[1] = scale*(read_uint16(f)-(0xffff/2));
+				t[2] = scale*(read_uint16(f)-(0xffff/2));
 			}
 		}
 
@@ -140,9 +140,13 @@ public:
 			printf("%d, ",t);
 		NL;
 		TABS(level);printf("%d unknown lists:\n",unknown_list_count); NL;
-		TABS(level+1);
+
 		for( auto t : unknowns)
-			print_chars(t.data(),20);
+		{
+			TABS(level+1);printf("vdu_s ");print_int16_ts(t.data(),10);NL;
+			TABS(level+1);printf("vdu_i ");print_int16_ts(t.data(),5);NL;
+			TABS(level+1);printf("vdu_f ");print_floats(t.data(),5);NL;
+		}
 	}
 
 

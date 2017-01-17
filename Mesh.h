@@ -29,12 +29,16 @@ class Mesh_unknown
 {
 public:
 
-	float u1[3];
-	float u2[3];
-	uint8_t u3[0x80] ;
-	uint16_t u4;
-	uint8_t u5[0x30];
-	uint16_t u6;
+	float u1[3]; // bounding box minimum
+	float u2[3]; // bounding box maximum
+
+	//	uint8_t u3[0x80] ;
+	int32_t u3[32] ; // refer to the unknown attributes. The values are in the correct range.
+	// usually most of them are 0.
+
+	int16_t u4; // shadow map id
+	uint8_t u5[0x30]; // shadow geometry 4*3 floats form a rectangle
+	int16_t u6; // color map id
 
 	Mesh_unknown(){}
 
@@ -43,25 +47,37 @@ public:
 		fread(u1,3*sizeof (float),1,f);
 		fread(u2,3*sizeof (float),1,f);
 
-		fread(u3,0x80,1,f);
-		u4 = read_uint16(f);
+
+		fread(u3,32*4,1,f);
+		/*fread(u3_2,2*4,1,f);
+		fread(&u3_3,1*4,1,f);
+		fread(u3_4,21*4,1,f);
+*/
+		u4 = read_int16(f);
 		fread(u5,0x30,1,f);
-		u6 = read_uint16(f);
+		u6 = read_int16(f);
 	}
 
 	void print(int level)
 	{
 		TABS(level);printf("MU\n");
-		TABS(level); for(int i = 0 ; i<3;i++)
+		TABS(level);printf("MU12");for(int i = 0 ; i<3;i++)
 			printf("%f ",u1[i]);
 		printf("|| ");
 		for(int i = 0 ; i<3;i++)
 			printf("%f ",u2[i]);
 		NL;
-		TABS(level); print_chars(u3,0x80);	NL;
-		TABS(level); printf("%d\n",u4);		NL;
-		TABS(level); print_chars(u5,0x30);	NL;
-		TABS(level); printf("%d\n",u6);
+		TABS(level);printf("MU3 ui "); print_uints(u3,32);	NL;
+		/*TABS(level);printf("MU3_2  i "); print_uints(u3_2,2);	NL;
+		TABS(level);printf("MU3_3  i "); print_uints(&u3_3,1);	NL;
+		TABS(level);printf("MU3_4  i "); print_ints(u3_4,21);	NL;
+*/
+		TABS(level);printf("MU4  s %d",u4); print_int16_ts((uint8_t*)&u4,1);		NL;
+		TABS(level);printf("MU5  b "); print_bytes(u5,0x30);	NL;
+		TABS(level);printf("MU5  f "); print_floats(u5,0x30/4);	NL;
+
+		TABS(level);printf("MU6  s "); print_int16_ts((uint8_t*)&u6,1);		NL;
+
 	}
 };
 

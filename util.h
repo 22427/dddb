@@ -24,50 +24,69 @@
 #define TABS(l) do{for(int i=0;i<l;i++)printf("\t");}while(0)
 #endif
 
-inline void print_chars(uint8_t* b, int cnt)
+inline void print_bytes(uint8_t* b, int cnt)
 {
+
 	printf("|");
 	for(int i = 0 ; i< cnt;i++)
 	{
-		printf("%02X|",b[i]);
+		printf("%02X|",(uint32_t)b[i]);
 	}
 }
 
+inline void print_uints(void* bb, int cnt)
+{
+	printf("|");
+	uint32_t* b = (uint32_t*) bb;
+	for(int i = 0 ; i< cnt;i++)
+	{
+		printf("%u|",b[i]);
+	}
+}
 
-inline void print_ints(uint8_t* bb, int cnt)
+inline void print_ints(void* bb, int cnt)
 {
 	printf("|");
 	int* b = (int*) bb;
 	for(int i = 0 ; i< cnt;i++)
 	{
-		printf("%d,",b[i]);
+		printf("%d|",b[i]);
 	}
-	printf("|");
 }
 
 
 
-inline void print_uint16_ts(uint8_t* bb, int cnt)
+inline void print_uint16_ts(void* bb, int cnt)
 {
 	printf("|");
 	uint16_t* b = (uint16_t*) bb;
 	for(int i = 0 ; i< cnt;i++)
 	{
-		printf("%d,",b[i]);
+		printf("%u|",b[i]);
 	}
+
+}
+
+inline void print_int16_ts(void* bb, int cnt)
+{
 	printf("|");
+	int16_t* b = (int16_t*) bb;
+	for(int i = 0 ; i< cnt;i++)
+	{
+		printf("%d|",b[i]);
+	}
+
 }
 
 
-inline void print_floats(uint8_t* bb, int cnt)
+inline void print_floats(void* bb, int cnt)
 {
 	printf("|");
 	float* b = (float*) bb;
 	for(int i = 0 ; i< cnt;i++)
 	{
-		printf("%f,",b[i]);
+		printf("%f|",b[i]);
 	}
-	printf("|");
 }
 
 
